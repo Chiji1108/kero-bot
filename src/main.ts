@@ -1,9 +1,9 @@
 import { dirname, importx } from "@discordx/importer";
 import {
   IntentsBitField,
-  Partials,
   type Interaction,
   type Message,
+  Partials,
 } from "discord.js";
 import { Client } from "discordx";
 
