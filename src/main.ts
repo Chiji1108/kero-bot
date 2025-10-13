@@ -60,7 +60,7 @@ async function run() {
 
   // Let's start the bot
   if (!process.env.BOT_TOKEN) {
-    throw Error("Could not find BOT_TOKEN in your environment");
+    throw new Error("Could not find BOT_TOKEN in your environment");
   }
 
   // Log in with your bot token
