@@ -1,45 +1,8 @@
-import {
-  AuditLogEvent,
-  type GuildTextBasedChannel,
-  type Message,
-  type PartialMessage,
-} from "discord.js";
+import type { GuildTextBasedChannel } from "discord.js";
 import { type ArgsOf, type Client, Discord, On } from "discordx";
 
 @Discord()
 export class MessageLogging {
-  private async resolveDeleter(
-    message: Message<boolean> | PartialMessage
-  ): Promise<string> {
-    if (!message.guild) {
-      return "不明";
-    }
-
-    try {
-      const logs = await message.guild.fetchAuditLogs({
-        type: AuditLogEvent.MessageDelete,
-        limit: 5,
-      });
-
-      const entry = logs.entries.find((log) => {
-        const sameTarget = log.target?.id === message.author?.id;
-        const sameChannel = log.extra?.channel?.id === message.channelId;
-        // biome-ignore lint/style/noMagicNumbers: FIXME
-        const recentEnough = Date.now() - log.createdTimestamp < 5000;
-
-        return Boolean(sameTarget && sameChannel && recentEnough);
-      });
-
-      if (entry) {
-        return entry.executor?.toString() ?? entry.executorId ?? "不明";
-      }
-    } catch (error) {
-      console.error("Failed to fetch audit logs", error);
-    }
-
-    return "不明";
-  }
-
   @On()
   async messageDelete(
     [message]: ArgsOf<"messageDelete">,
@@ -68,14 +31,11 @@ export class MessageLogging {
     const authorMention = message.author?.toString() ?? "不明";
     const content = message.content?.trim();
 
-    const deleterLabel = await this.resolveDeleter(message);
-
     const attachmentUrls = message.attachments.map(
       (attachment) => attachment.url
     );
     const lines: string[] = [
       "🗑️ メッセージが削除されました。",
-      `削除したユーザー: ${deleterLabel}`,
       `元の投稿者: ${authorMention} (${authorTag})`,
     ];
 
