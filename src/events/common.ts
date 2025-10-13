@@ -36,7 +36,7 @@ export class MessageLogging {
     );
     const lines: string[] = [
       "🗑️ メッセージが削除されました。",
-      `元の投稿者: ${authorMention} (${authorTag})`,
+      `投稿者: ${authorMention} (${authorTag})`,
     ];
 
     if (content) {
