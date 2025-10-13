@@ -1,10 +1,46 @@
-import { AuditLogEvent, type GuildTextBasedChannel } from "discord.js";
+import {
+  AuditLogEvent,
+  type GuildTextBasedChannel,
+  type Message,
+  type PartialMessage,
+} from "discord.js";
 import { type ArgsOf, type Client, Discord, On } from "discordx";
 
 @Discord()
 export class MessageLogging {
+  private async resolveDeleter(
+    message: Message<boolean> | PartialMessage
+  ): Promise<string> {
+    if (!message.guild) {
+      return "不明";
+    }
+
+    try {
+      const logs = await message.guild.fetchAuditLogs({
+        type: AuditLogEvent.MessageDelete,
+        limit: 5,
+      });
+
+      const entry = logs.entries.find((log) => {
+        const sameTarget = log.target?.id === message.author?.id;
+        const sameChannel = log.extra?.channel?.id === message.channelId;
+        // biome-ignore lint/style/noMagicNumbers: FIXME
+        const recentEnough = Date.now() - log.createdTimestamp < 5000;
+
+        return Boolean(sameTarget && sameChannel && recentEnough);
+      });
+
+      if (entry) {
+        return entry.executor?.toString() ?? entry.executorId ?? "不明";
+      }
+    } catch (error) {
+      console.error("Failed to fetch audit logs", error);
+    }
+
+    return "不明";
+  }
+
   @On()
-  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: FIXME
   async messageDelete(
     [message]: ArgsOf<"messageDelete">,
     client: Client
@@ -32,28 +68,7 @@ export class MessageLogging {
     const authorMention = message.author?.toString() ?? "不明";
     const content = message.content?.trim();
 
-    let deleterLabel = "不明";
-
-    try {
-      const logs = await message.guild.fetchAuditLogs({
-        type: AuditLogEvent.MessageDelete,
-        limit: 1,
-      });
-      const deletion = logs.entries.first();
-
-      if (deletion) {
-        // biome-ignore lint/style/noMagicNumbers: FIXME
-        const isRecent = Date.now() - deletion.createdTimestamp < 5000;
-        const targetsMessageAuthor = deletion.target?.id === message.author?.id;
-
-        if (isRecent && targetsMessageAuthor) {
-          deleterLabel =
-            deletion.executor?.toString() ?? deletion.executorId ?? "不明";
-        }
-      }
-    } catch (error) {
-      console.error("Failed to fetch audit logs", error);
-    }
+    const deleterLabel = await this.resolveDeleter(message);
 
     const attachmentUrls = message.attachments.map(
       (attachment) => attachment.url
