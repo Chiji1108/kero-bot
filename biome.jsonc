@@ -4,10 +4,14 @@
   "linter": {
     "rules": {
       "complexity": {
-        "noVoid": "off"
+        "noVoid": "off",
+        "noExcessiveCognitiveComplexity": "off"
       },
       "suspicious": {
         "noConsole": "off"
+      },
+      "style": {
+        "noMagicNumbers": "off"
       }
     }
   }
