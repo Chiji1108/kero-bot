@@ -183,7 +183,7 @@ export class MessageLogging {
     if (keroId) {
       if (!authorId || authorId !== keroId) {
         await sendChannel.send(
-          "ケロではないので編集された内容は開示されません。500円で開示請求を行うことができます。"
+          "ケロではないので編集前の内容は開示されません。500円で開示請求を行うことができます。"
         );
         return;
       }
