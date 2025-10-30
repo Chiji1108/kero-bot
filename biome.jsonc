@@ -11,7 +11,8 @@
         "noConsole": "off"
       },
       "style": {
-        "noMagicNumbers": "off"
+        "noMagicNumbers": "off",
+        "noNonNullAssertion": "off"
       }
     }
   }
