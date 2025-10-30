@@ -83,6 +83,22 @@ export class MessageLogging {
     }
 
     const sendChannel = channel as GuildTextBasedChannel;
+    const keroId = process.env.KERO_ID;
+    const authorId = message.author?.id;
+
+    if (keroId) {
+      if (!authorId || authorId !== keroId) {
+        await sendChannel.send(
+          "ケロではないので削除された内容は開示されません。500円で開示請求を行うことができます。"
+        );
+        return;
+      }
+    } else {
+      console.warn(
+        "KERO_ID is not set; falling back to default delete logging."
+      );
+    }
+
     const authorTag = message.author?.tag ?? "不明";
     const authorMention = message.author?.toString() ?? "不明";
     const content = message.content?.trim();
@@ -160,7 +176,21 @@ export class MessageLogging {
     }
 
     const sendChannel = channel as GuildTextBasedChannel;
+    const keroId = process.env.KERO_ID;
     const author = resolvedNewMessage.author ?? oldMessage.author;
+    const authorId = author?.id;
+
+    if (keroId) {
+      if (!authorId || authorId !== keroId) {
+        await sendChannel.send(
+          "ケロではないので編集された内容は開示されません。500円で開示請求を行うことができます。"
+        );
+        return;
+      }
+    } else {
+      console.warn("KERO_ID is not set; falling back to default edit logging.");
+    }
+
     const authorTag = author?.tag ?? "不明";
     const authorMention = author?.toString() ?? "不明";
 
