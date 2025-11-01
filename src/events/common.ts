@@ -88,9 +88,9 @@ export class MessageLogging {
 
     if (keroId) {
       if (!authorId || authorId !== keroId) {
-        await sendChannel.send(
-          "ケロではないので削除された内容は開示されません。500円で開示請求を行うことができます。"
-        );
+        // await sendChannel.send(
+        //   "ケロではないので削除された内容は開示されません。500円で開示請求を行うことができます。"
+        // );
         return;
       }
     } else {
@@ -182,9 +182,9 @@ export class MessageLogging {
 
     if (keroId) {
       if (!authorId || authorId !== keroId) {
-        await sendChannel.send(
-          "ケロではないので編集前の内容は開示されません。500円で開示請求を行うことができます。"
-        );
+        // await sendChannel.send(
+        //   "ケロではないので編集前の内容は開示されません。500円で開示請求を行うことができます。"
+        // );
         return;
       }
     } else {
